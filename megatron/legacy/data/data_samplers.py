@@ -135,9 +135,9 @@ class MegatronPretrainingRandomSampler:
         self.data_parallel_size = data_parallel_size
         self.data_sharding = data_sharding
         args = get_args()
-        orin_data_seed = getattr(args, "orin_data_seed", None)
-        self.seed = int(args.seed if orin_data_seed is None else orin_data_seed)
-        self.seed_mode = getattr(args, "orin_seed_mode", "megatron")
+        sampler_data_seed = getattr(args, "sampler_data_seed", None)
+        self.seed = int(args.seed if sampler_data_seed is None else sampler_data_seed)
+        self.seed_mode = getattr(args, "sampler_seed_mode", "megatron")
         self.micro_batch_times_data_parallel_size = \
             self.micro_batch_size * data_parallel_size
         self.last_batch_size = \

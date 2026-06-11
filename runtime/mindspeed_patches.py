@@ -1,4 +1,4 @@
-"""Local Orin runtime patches for the MindSpeed-LLM backend."""
+"""Runtime patches for the MindSpeed-LLM backend."""
 
 from __future__ import annotations
 
@@ -9,13 +9,13 @@ from typing import Any, Callable
 import torch
 
 
-def install_orin_mtp_feature_guard() -> None:
+def install_mtp_feature_guard() -> None:
     """Disable MindSpeed-LLM MTP patch registration unless MTP is enabled."""
 
     from mindspeed_llm.features_manager.transformer.mtp import MultiTokenPredictionFeature
 
     original_register_patches = MultiTokenPredictionFeature.register_patches
-    if getattr(original_register_patches, "_orin_mtp_guard", False):
+    if getattr(original_register_patches, "_recurrent_lm_mtp_guard", False):
         return
 
     def register_patches(self: Any, patch_manager: Any, args: Any) -> Any:
@@ -23,19 +23,19 @@ def install_orin_mtp_feature_guard() -> None:
             return None
         return original_register_patches(self, patch_manager, args)
 
-    register_patches._orin_mtp_guard = True  # type: ignore[attr-defined]
+    register_patches._recurrent_lm_mtp_guard = True  # type: ignore[attr-defined]
     MultiTokenPredictionFeature.register_patches = register_patches
 
 
 def _use_llamafactory_wandb(training_module: ModuleType, args: Any, wandb_writer: Any) -> bool:
     if wandb_writer is None or not training_module.is_last_rank():
         return False
-    style = os.getenv("ORIN_WANDB_LOG_STYLE", "").strip().lower()
+    style = os.getenv("RECURRENT_WANDB_LOG_STYLE", "").strip().lower()
     if style in ("llamafactory", "hf", "trainer"):
         return True
     if style in ("", "0", "false", "off", "none"):
         return False
-    return bool(getattr(args, "orin_tokenized_path", None))
+    return bool(getattr(args, "tokenized_path", None))
 
 
 def _scalar(value: Any) -> float | None:
@@ -51,10 +51,10 @@ def _wandb_global_step(iteration: int) -> int:
     return int(iteration) + offset
 
 
-def _orin_epoch(args: Any) -> float:
+def _recurrent_epoch(args: Any) -> float:
     train_samples = int(
-        getattr(args, "orin_dataset_train_len", 0)
-        or os.getenv("ORIN_TRAIN_SAMPLES", "0")
+        getattr(args, "dataset_train_len", 0)
+        or os.getenv("RECURRENT_TRAIN_SAMPLES", "0")
         or "0"
     )
     if train_samples <= 0:
@@ -114,7 +114,7 @@ def _log_llamafactory_train_wandb(
     learning_rate: Any,
 ) -> None:
     metrics = {
-        "train/epoch": _orin_epoch(args),
+        "train/epoch": _recurrent_epoch(args),
         "train/global_step": _wandb_global_step(iteration),
     }
     loss_value = _scalar(loss)
@@ -129,11 +129,25 @@ def _log_llamafactory_train_wandb(
     wandb_writer.log(metrics)
 
 
+def _log_llamafactory_eval_wandb(
+    wandb_writer: Any,
+    args: Any,
+    iteration: int,
+    loss: float,
+) -> None:
+    metrics = {
+        "eval/epoch": _recurrent_epoch(args),
+        "eval/global_step": _wandb_global_step(iteration),
+        "eval/loss": loss,
+    }
+    wandb_writer.log(metrics)
+
+
 def install_llamafactory_wandb_training_log(training_module: ModuleType) -> None:
-    """Make MindSpeed-LLM trainer emit LLaMA-Factory-shaped W&B metrics for Orin."""
+    """Make MindSpeed-LLM trainer emit LLaMA-Factory-shaped train W&B metrics."""
 
     original_training_log = training_module.training_log
-    if getattr(original_training_log, "_orin_llamafactory_wandb", False):
+    if getattr(original_training_log, "_recurrent_lm_llamafactory_wandb", False):
         return
 
     def training_log(
@@ -205,5 +219,94 @@ def install_llamafactory_wandb_training_log(training_module: ModuleType) -> None
             )
         return result
 
-    training_log._orin_llamafactory_wandb = True  # type: ignore[attr-defined]
+    training_log._recurrent_lm_llamafactory_wandb = True  # type: ignore[attr-defined]
     training_module.training_log = training_log
+
+
+def install_llamafactory_wandb_eval_log(training_module: ModuleType) -> None:
+    """Make MindSpeed-LLM eval emit LLaMA-Factory-shaped W&B metrics."""
+
+    original_eval_print = training_module.evaluate_and_print_results
+    if getattr(original_eval_print, "_recurrent_lm_llamafactory_eval_wandb", False):
+        return
+
+    globals_ = original_eval_print.__globals__
+    evaluate = globals_["evaluate"]
+    get_args = globals_["get_args"]
+    get_tensorboard_writer = globals_["get_tensorboard_writer"]
+    get_wandb_writer = globals_["get_wandb_writer"]
+    is_last_rank = globals_["is_last_rank"]
+    math_module = globals_["math"]
+    print_rank_last = globals_["print_rank_last"]
+
+    def evaluate_and_print_results(
+        prefix: str,
+        forward_step_func: Any,
+        data_iterator: Any,
+        model: Any,
+        iteration: int,
+        process_non_loss_data_func: Any,
+        config: Any,
+        verbose: bool = False,
+        write_to_tensorboard: bool = True,
+        non_loss_data_func: Any = None,
+    ) -> None:
+        args = get_args()
+        writer = get_tensorboard_writer() if write_to_tensorboard else None
+        raw_wandb_writer = get_wandb_writer()
+        llamafactory_wandb_writer = (
+            raw_wandb_writer
+            if _use_llamafactory_wandb(training_module, args, raw_wandb_writer)
+            else None
+        )
+
+        total_loss_dict, collected_non_loss_data, timelimit = evaluate(
+            forward_step_func,
+            data_iterator,
+            model,
+            process_non_loss_data_func,
+            config,
+            verbose,
+            non_loss_data_func,
+        )
+        if timelimit:
+            return
+
+        string = f" validation loss at {prefix} | "
+        eval_loss = None
+        for key in total_loss_dict:
+            loss_value = total_loss_dict[key].item()
+            string += "{} value: {:.6E} | ".format(key, loss_value)
+            ppl = math_module.exp(min(20, loss_value))
+            string += "{} PPL: {:.6E} | ".format(key, ppl)
+            if key == "lm loss" or eval_loss is None:
+                eval_loss = loss_value
+            if writer:
+                writer.add_scalar("{} validation".format(key), loss_value, iteration)
+                writer.add_scalar("{} validation vs samples".format(key), loss_value, args.consumed_train_samples)
+                if args.log_validation_ppl_to_tensorboard:
+                    writer.add_scalar("{} validation ppl".format(key), ppl, iteration)
+                    writer.add_scalar("{} validation ppl vs samples".format(key), ppl, args.consumed_train_samples)
+
+        if (
+            llamafactory_wandb_writer
+            and eval_loss is not None
+            and is_last_rank()
+        ):
+            _log_llamafactory_eval_wandb(
+                llamafactory_wandb_writer,
+                args,
+                iteration,
+                eval_loss,
+            )
+
+        if process_non_loss_data_func is not None and writer and is_last_rank():
+            process_non_loss_data_func(collected_non_loss_data, iteration, writer)
+
+        length = len(string) + 1
+        print_rank_last("-" * length)
+        print_rank_last(string)
+        print_rank_last("-" * length)
+
+    evaluate_and_print_results._recurrent_lm_llamafactory_eval_wandb = True  # type: ignore[attr-defined]
+    training_module.evaluate_and_print_results = evaluate_and_print_results
