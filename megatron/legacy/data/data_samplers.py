@@ -134,6 +134,10 @@ class MegatronPretrainingRandomSampler:
         self.data_parallel_rank = data_parallel_rank
         self.data_parallel_size = data_parallel_size
         self.data_sharding = data_sharding
+        args = get_args()
+        orin_data_seed = getattr(args, "orin_data_seed", None)
+        self.seed = int(args.seed if orin_data_seed is None else orin_data_seed)
+        self.seed_mode = getattr(args, "orin_seed_mode", "megatron")
         self.micro_batch_times_data_parallel_size = \
             self.micro_batch_size * data_parallel_size
         self.last_batch_size = \
@@ -151,7 +155,78 @@ class MegatronPretrainingRandomSampler:
     def __len__(self):
         return self.total_samples
 
+    def _llamafactory_rank_batches(self, idx_range_total, local_batches_to_skip):
+        """Yield batches using HF Trainer/Accelerate BatchSamplerShard semantics."""
+
+        initial_data = []
+        batch_to_yield = []
+        emitted = 0
+        idx = -1
+        batch = []
+        for idx, start in enumerate(range(0, self.total_samples, self.micro_batch_size)):
+            batch = idx_range_total[start : start + self.micro_batch_size]
+            if idx < self.data_parallel_size:
+                initial_data += batch
+            if idx % self.data_parallel_size == self.data_parallel_rank:
+                batch_to_yield = batch
+            if idx % self.data_parallel_size == self.data_parallel_size - 1 and len(batch) == self.micro_batch_size:
+                if emitted >= local_batches_to_skip:
+                    yield batch_to_yield
+                emitted += 1
+                batch_to_yield = []
+
+        if not initial_data:
+            return
+
+        if len(batch_to_yield) == self.micro_batch_size:
+            if emitted >= local_batches_to_skip:
+                yield batch_to_yield
+            emitted += 1
+
+        while len(initial_data) < self.micro_batch_times_data_parallel_size:
+            initial_data += initial_data
+
+        if len(batch) == self.micro_batch_size:
+            batch = []
+            idx += 1
+
+        cycle_index = 0
+        while idx % self.data_parallel_size != 0 or len(batch) > 0:
+            end_index = cycle_index + self.micro_batch_size - len(batch)
+            batch += initial_data[cycle_index:end_index]
+            if idx % self.data_parallel_size == self.data_parallel_rank:
+                if emitted >= local_batches_to_skip:
+                    yield batch
+                emitted += 1
+            cycle_index = end_index
+            batch = []
+            idx += 1
+
     def __iter__(self):
+        if self.seed_mode == "llamafactory":
+            if self.consumed_samples > 0:
+                assert self.consumed_samples % self.micro_batch_times_data_parallel_size == 0
+            total_batches = (self.total_samples + self.micro_batch_size - 1) // self.micro_batch_size
+            rank_batches_per_epoch = (
+                total_batches + self.data_parallel_size - 1
+            ) // self.data_parallel_size
+            epoch_samples = rank_batches_per_epoch * self.micro_batch_times_data_parallel_size
+            self.epoch = self.consumed_samples // epoch_samples
+            current_epoch_samples = self.consumed_samples % epoch_samples
+            local_batches_to_skip = current_epoch_samples // self.micro_batch_times_data_parallel_size
+
+            if isinstance(self.dataset, RandomSeedDataset):
+                self.dataset.set_epoch(self.epoch)
+            shuffle_seed = self.seed + self.epoch
+
+            g = torch.Generator()
+            g.manual_seed(shuffle_seed)
+            idx_range_total = torch.randperm(self.total_samples, generator=g).tolist()
+            for batch in self._llamafactory_rank_batches(idx_range_total, local_batches_to_skip):
+                self.consumed_samples += self.micro_batch_times_data_parallel_size
+                yield batch
+            return
+
         active_total_samples = self.total_samples - self.last_batch_size
         self.epoch = self.consumed_samples // active_total_samples
         current_epoch_samples = self.consumed_samples % active_total_samples
@@ -159,6 +234,7 @@ class MegatronPretrainingRandomSampler:
 
         if isinstance(self.dataset, RandomSeedDataset):
             self.dataset.set_epoch(self.epoch)
+        shuffle_seed = self.seed + self.epoch
 
         # data sharding and random sampling
         if self.data_sharding:
@@ -168,7 +244,7 @@ class MegatronPretrainingRandomSampler:
             start_idx = self.data_parallel_rank * bucket_size
 
             g = torch.Generator()
-            g.manual_seed(self.epoch)
+            g.manual_seed(shuffle_seed)
             random_idx = torch.randperm(bucket_size, generator=g).tolist()
             idx_range = [start_idx + x for x in random_idx[bucket_offset:]]
         else:
@@ -176,7 +252,7 @@ class MegatronPretrainingRandomSampler:
                                 * self.micro_batch_size
             full_bucket_offset = current_epoch_samples
             g = torch.Generator()
-            g.manual_seed(self.epoch)
+            g.manual_seed(shuffle_seed)
             idx_range_total = \
                 torch.randperm(full_bucket_size, generator=g).tolist()
             idx_range_active = idx_range_total[full_bucket_offset:]

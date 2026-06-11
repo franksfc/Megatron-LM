@@ -6,6 +6,10 @@ build
 *~
 slurm*
 logs
+outputs/
+kernel_meta/
+fusion_result.json
+third_party/orin_mindspeed/downloads/
 .vscode
 local/
 .gitmodules

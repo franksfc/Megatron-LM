@@ -183,13 +183,21 @@ def _set_wandb_writer(args):
         else:
             # Defaults to the save dir.
             save_dir = os.path.join(args.save, 'wandb')
+        os.environ.setdefault("WANDB_DISABLE_STATS", "true")
         wandb_kwargs = {
             'dir': save_dir,
             'name': args.wandb_exp_name,
             'project': args.wandb_project,
+            'id': os.environ.get('WANDB_RUN_ID', args.wandb_exp_name),
+            'resume': 'allow',
             'config': vars(args)}
+        if os.environ.get('WANDB_ENTITY'):
+            wandb_kwargs['entity'] = os.environ['WANDB_ENTITY']
         os.makedirs(wandb_kwargs['dir'], exist_ok=True)
         wandb.init(**wandb_kwargs)
+        if getattr(wandb, "define_metric", None):
+            wandb.define_metric("train/global_step")
+            wandb.define_metric("*", step_metric="train/global_step", step_sync=True)
         _GLOBAL_WANDB_WRITER = wandb
 
 

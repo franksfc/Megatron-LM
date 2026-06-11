@@ -1,0 +1,875 @@
+[
+  {
+    "name": "chatglm2",
+    "format_user": {
+      "slots": [
+        "[Round {{idx}}]\n\n问：{{content}}\n\n答："
+      ]
+    },
+    "format_prefix": {
+      "slots": [
+        {
+          "token": "[gMASK]"
+        },
+        {
+          "token": "sop"
+        }
+      ]
+    },
+    "format_separator": {
+      "slots": [
+        "\n\n"
+      ]
+    },
+    "efficient_eos": true,
+    "force_system": true
+  },
+  {
+    "name": "chatglm3",
+    "format_user": {
+      "slots": [
+        {
+          "token": "<|user|>"
+        },
+        "\n",
+        "{{content}}",
+        {
+          "token": "<|assistant|>"
+        }
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "\n",
+        "{{content}}"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        {
+          "token": "<|system|>"
+        },
+        "\n",
+        "{{content}}"
+      ]
+    },
+    "format_observation": {
+      "slots": [
+        {
+          "token": "<|observation|>"
+        },
+        "\n",
+        "{{content}}",
+        {
+          "token": "<|assistant|>"
+        }
+      ]
+    },
+    "format_tools": {
+      "tool_format": "glm4"
+    },
+    "format_prefix": {
+      "slots": [
+        {
+          "token": "[gMASK]"
+        },
+        {
+          "token": "sop"
+        }
+      ]
+    },
+    "stop_words": [
+      "<|user|>",
+      "<|observation|>"
+    ],
+    "efficient_eos": true
+  },
+  {
+    "name": "chatglm3_system",
+    "format_user": {
+      "slots": [
+        {
+          "token": "<|user|>"
+        },
+        "\n",
+        "{{content}}",
+        {
+          "token": "<|assistant|>"
+        }
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "\n",
+        "{{content}}"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        {
+          "token": "[gMASK]"
+        },
+        {
+          "token": "sop"
+        },
+        {
+          "token": "<|system|>"
+        },
+        "\n",
+        "{{content}}"
+      ]
+    },
+    "format_function": {
+      "slots": [
+        "{{name}}\n{{arguments}}"
+      ]
+    },
+    "format_observation": {
+      "slots": [
+        {
+          "token": "<|observation|>"
+        },
+        "\n",
+        "{{content}}",
+        {
+          "token": "<|assistant|>"
+        }
+      ]
+    },
+    "default_system": "You are ChatGLM3, a large language model trained by Zhipu.AI. Follow the user's instructions carefully. Respond using markdown.",
+    "stop_words": [
+      "<|user|>",
+      "<|observation|>"
+    ],
+    "efficient_eos": true
+  },
+  {
+    "name": "glm4",
+    "format_user": {
+      "slots": [
+        "<|user|>\n{{content}}<|assistant|>"
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "\n{{content}}"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<|system|>\n{{content}}"
+      ]
+    },
+    "format_function": {
+      "slots": [
+        "{{name}}\n{{arguments}}"
+      ],
+      "tool_format": "glm4"
+    },
+    "format_observation": {
+      "slots": [
+        "<|observation|>\n{{content}}<|assistant|>"
+      ]
+    },
+    "format_tools": {
+      "tool_format": "glm4"
+    },
+    "format_prefix": {
+      "slots": [
+        "[gMASK]<sop>"
+      ]
+    },
+    "stop_words": [
+      "<|user|>",
+      "<|observation|>"
+    ],
+    "efficient_eos": true
+  },
+  {
+    "name": "glm4_moe",
+    "format_user": {
+      "slots": [
+        "<|user|>\n{{content}}<|assistant|>"
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "\n{{content}}"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<|system|>\n{{content}}"
+      ]
+    },
+    "format_function": {
+      "slots": [
+        "{{name}}\n{{arguments}}"
+      ],
+      "tool_format": "glm4_moe"
+    },
+    "format_observation": {
+      "slots": [
+        "<|observation|>\n{{content}}<|assistant|>"
+      ]
+    },
+    "format_tools": {
+      "tool_format": "glm4_moe"
+    },
+    "format_prefix": {
+      "slots": [
+        "[gMASK]<sop>"
+      ]
+    },
+    "stop_words": [
+      "<|user|>",
+      "<|observation|>"
+    ],
+    "efficient_eos": true,
+    "template_class": "ReasoningTemplate"
+  },
+  {
+    "name": "chatml",
+    "format_user": {
+      "slots": [
+        "<|im_start|>user\n{{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<|im_start|>system\n{{content}}<|im_end|>\n"
+      ]
+    },
+    "format_observation": {
+      "slots": [
+        "<|im_start|>tool\n{{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_separator": {
+      "slots": [
+        "\n"
+      ]
+    },
+    "stop_words": [
+      "<|im_end|>",
+      "<|im_start|>"
+    ],
+    "replace_eos": true
+  },
+  {
+    "name": "chatml_de",
+    "format_user": {
+      "slots": [
+        "<|im_start|>user\n{{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<|im_start|>system\n{{content}}<|im_end|>\n"
+      ]
+    },
+    "format_observation": {
+      "slots": [
+        "<|im_start|>tool\n{{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_separator": {
+      "slots": [
+        "\n"
+      ]
+    },
+    "default_system": "Du bist ein freundlicher und hilfsbereiter KI-Assistent.",
+    "stop_words": [
+      "<|im_end|>",
+      "<|im_start|>"
+    ],
+    "replace_eos": true
+  },
+  {
+    "name": "cpm",
+    "format_user": {
+      "slots": [
+        "<用户>{{content}}<AI>"
+      ]
+    },
+    "format_prefix": {
+      "slots": [
+        [
+          "bos_token"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "default",
+    "format_user": {
+      "slots": [
+        "Human: {{content}}\nAssistant:"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "{{content}}\n"
+      ]
+    },
+    "format_separator": {
+      "slots": [
+        "\n"
+      ]
+    }
+  },
+  {
+    "name": "empty",
+    "format_user": {
+      "slots": [
+        "{{content}}"
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "{{content}}"
+      ]
+    }
+  },
+  {
+    "name": "trl",
+    "format_user": {
+      "slots": [
+        "{{content}}"
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "{{content}}"
+      ]
+    },
+    "format_prefix": {
+      "slots": [
+        [
+          "bos_token"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "qwen_lf",
+    "format_user": {
+      "slots": [
+        "<|im_start|>user\n{{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "{{content}}<|im_end|>\n"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<|im_start|>system\n{{content}}<|im_end|>\n"
+      ]
+    },
+    "format_observation": {
+      "slots": [
+        "<|im_start|>user\n<tool_response>\n{{content}}\n</tool_response><|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_separator": {
+      "slots": [
+        "\n"
+      ]
+    },
+    "default_system": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant.",
+    "stop_words": [
+      "<|im_end|>"
+    ],
+    "replace_eos": true,
+    "template_class": "LFDefaultTemplate"
+  },
+  {
+    "name": "qwen",
+    "format_user": {
+      "slots": [
+        "<|im_start|>user\n{{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<|im_start|>system\n{{content}}<|im_end|>\n"
+      ]
+    },
+    "format_observation": {
+      "slots": [
+        "<|im_start|>tool\n{{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_separator": {
+      "slots": [
+        "\n"
+      ]
+    },
+    "default_system": "You are a helpful assistant.",
+    "stop_words": [
+      "<|im_end|>"
+    ],
+    "replace_eos": true
+  },
+  {
+    "name": "qwen_r1",
+    "format_user": {
+      "slots": [
+        "<|im_start|>user\nA conversation between User and Assistant. The user asks a question, and the Assistant solves it. The assistant first thinks about the reasoning process in the mind and then provides the user with the answer. The reasoning process and answer are enclosed within <think> </think> and <answer> </answer> tags, respectively, i.e., <think> reasoning process here </think><answer> answer here </answer>Put your final answer within \\\\boxed{}. {{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<|im_start|>system\n{{content}}<|im_end|>\n"
+      ]
+    },
+    "format_observation": {
+      "slots": [
+        "<|im_start|>tool\n{{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_separator": {
+      "slots": [
+        "\n"
+      ]
+    },
+    "default_system": "You are a helpful assistant.",
+    "stop_words": [
+      "<|im_end|>"
+    ],
+    "replace_eos": true
+  },
+  {
+    "name": "qwen_math_r1",
+    "format_user": {
+      "slots": [
+        "<|im_start|>user\n{{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<|im_start|>system\n{{content}}<|im_end|>\n"
+      ]
+    },
+    "format_observation": {
+      "slots": [
+        "<|im_start|>tool\n{{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_separator": {
+      "slots": [
+        "\n"
+      ]
+    },
+    "default_system": "Please reason step by step, and put your final answer within \\boxed{}.",
+    "stop_words": [
+      "<|im_end|>"
+    ],
+    "replace_eos": true
+  },
+  {
+    "name": "llama3",
+    "format_user": {
+      "slots": [
+        "<|start_header_id|>user<|end_header_id|>\n\n{{content}}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<|start_header_id|>system<|end_header_id|>\n\n{{content}}<|eot_id|>"
+      ]
+    },
+    "format_observation": {
+      "slots": [
+        "<|start_header_id|>tool<|end_header_id|>\n\n{{content}}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+      ]
+    },
+    "format_prefix": {
+      "slots": [
+        [
+          "bos_token"
+        ]
+      ]
+    },
+    "stop_words": [
+      "<|eot_id|>"
+    ],
+    "replace_eos": true
+  },
+  {
+    "name": "mistral",
+    "format_user": {
+      "slots": [
+        "[INST] {{content}} [/INST]"
+      ]
+    },
+    "format_prefix": {
+      "slots": [
+        [
+          "bos_token"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "mixtral",
+    "format_user": {
+      "slots": [
+        "[INST] {{content}} [/INST]"
+      ]
+    },
+    "format_prefix": {
+      "slots": [
+        [
+          "bos_token"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "magistral",
+    "format_user": {
+      "slots": [
+        "[INST]{{content}}[/INST]"
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "{{content}}",["eos_token"]
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "[SYSTEM_PROMPT]{{content}}[/SYSTEM_PROMPT]"
+      ]
+    },
+    "format_prefix": {
+      "slots": [
+        [
+          "bos_token"
+        ]
+      ]
+    },
+    "default_system": "system_prompt\n\nA user will ask you to solve a task. You should first draft your thinking process (inner monologue) until you have derived the final answer. Afterwards, write a self-contained summary of your thoughts (i.e. your summary should be succinct but contain all the critical steps you needed to reach the conclusion). You should use Markdown to format your response. Write both your thoughts and summary in the same language as the task posed by the user. NEVER use \\boxed{} in your response.\nYour thinking process must follow the template below:\n<think>\nYour thoughts or/and draft, like working through an exercise on scratch paper. Be as casual and as long as you want until you are confident to generate a correct answer.\n</think>\nHere, provide a concise summary that reflects your reasoning and presents a clear final answer to the user. Don't mention that this is a summary.\n\nProblem:\n\n",
+    "template_class":"ReasoningTemplate"
+  },
+  {
+    "name": "gemma",
+    "format_user": {
+      "slots": [
+        "<start_of_turn>user\n{{content}}<end_of_turn>\n<start_of_turn>model\n"
+      ]
+    },
+    "format_observation": {
+      "slots": [
+        "<start_of_turn>tool\n{{content}}<end_of_turn>\n<start_of_turn>model\n"
+      ]
+    },
+    "format_separator": {
+      "slots": [
+        "<end_of_turn>\n"
+      ]
+    },
+    "format_prefix": {
+      "slots": [
+        [
+          "bos_token"
+        ]
+      ]
+    },
+    "efficient_eos": true
+  },
+  {
+    "name": "llama2",
+    "format_user": {
+      "slots": [
+        [
+          "bos_token"
+        ],
+        "[INST] {{content}} [/INST]"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<<SYS>>\n{{content}}\n<</SYS>>\n\n"
+      ]
+    },
+    "template_class": "Llama2Template"
+  },
+  {
+    "name": "alpaca",
+    "format_user": {
+      "slots": [
+        "### Instruction:\n{{content}}\n\n### Response:\n"
+      ]
+    },
+    "format_separator": {
+      "slots": [
+        "\n\n"
+      ]
+    },
+    "default_system": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n"
+  },
+  {
+    "name": "deepseek2",
+    "format_user": {
+      "slots": [
+        "User: {{content}}\n\nAssistant:"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "{{content}}\n\n"
+      ]
+    },
+    "format_prefix": {
+      "slots": [
+        [
+          "bos_token"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "deepseek2-lite",
+    "format_user": {
+      "slots": [
+        "User: {{content}}\n\nAssistant:"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "{{content}}\n\n"
+      ]
+    },
+    "format_prefix": {
+      "slots": [
+        [
+          "bos_token"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "minicpm3",
+    "format_user": {
+      "slots": [
+        "User: {{content}}\n\nAssistant:"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "{{content}}\n\n"
+      ]
+    },
+    "format_prefix": {
+      "slots": [
+        [
+          "bos_token"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "baichuan2",
+    "format_user": {
+      "slots": [
+        "<reserved_106>{{content}}<reserved_107>"
+      ]
+    },
+    "efficient_eos": true
+  },
+  {
+    "name": "deepseek3",
+    "format_user": {
+      "slots": [
+        "<｜User｜>{{content}}<｜Assistant｜>"
+      ]
+    },
+    "format_prefix": {
+      "slots": [
+        [
+          "bos_token"
+        ]
+      ]
+    }
+  },
+  {
+    "name": "intern2",
+    "format_user": {
+      "slots": [
+        "<|im_start|>user\n{{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "{{content}}<|im_end|>\n"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<|im_start|>system\n{{content}}<|im_end|>\n"
+      ]
+    },
+    "format_prefix": {
+      "slots": [
+        [
+          "bos_token"
+        ]
+      ]
+    },
+    "stop_words": [
+      "<|im_end|>"
+    ]
+  },
+  {
+    "name": "hunyuan",
+    "format_user": {
+      "slots": [
+        "{{content}}"
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "{{content}}"
+      ]
+    },
+    "default_system": "You are a helpful assistant."
+  },
+  {
+    "name": "qwen3",
+    "format_user": {
+      "slots": [
+        "<|im_start|>user\n{{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "{{content}}<|im_end|>\n"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<|im_start|>system\n{{content}}<|im_end|>\n"
+      ]
+    },
+    "format_function": {
+      "slots": [
+        "{{content}}<|im_end|>\n"
+      ],
+      "tool_format": "qwen"
+    },
+    "format_observation": {
+      "slots": [
+        "<|im_start|>user\n<tool_response>\n{{content}}\n</tool_response><|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_tools": {
+      "tool_format": "qwen"
+    },
+    "stop_words": [
+      "<|im_end|>"
+    ],
+    "replace_eos": true,
+    "template_class": "ReasoningTemplate"
+  },
+  {
+    "name": "bailing_mini",
+    "format_user": {
+      "slots": [
+        "<role>HUMAN</role>{{content}}<|role_end|><role>ASSISTANT</role>"
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "{{content}}<|role_end|>"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<role>SYSTEM</role>{{content}}<|role_end|>"
+      ]
+    },
+    "format_observation": {
+      "slots": [
+        "<role>OBSERVATION</role>\n<tool_response>\n{{content}}\n</tool_response><|role_end|><role>ASSISTANT</role>"
+      ]
+    },
+    "format_function": {
+      "slots": [
+        "{{content}}<|role_end|>"
+      ],
+      "tool_format": "ling"
+    },
+    "format_tools": {
+      "tool_format": "ling"
+    },
+    "stop_words": [
+      "<|endoftext|>"
+    ],
+    "efficient_eos": true
+  },
+  {
+    "name": "plm",
+    "format_user": {
+      "slots": [
+        "<|im_start|>user\n{{content}}<|im_end|>\n<|im_start|>assistant\n"
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "{{content}}<|im_end|>\n"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<|im_start|>system\n{{content}}<|im_end|>\n"
+      ]
+    },
+    "default_system": "You are a helpful assistant.",
+    "stop_words": [
+      "<|endoftext|>"
+    ],
+    "replace_eos": true
+  },
+  {
+    "name": "gpt_oss",
+    "format_user": {
+      "slots": [
+        "<|start|>user<|message|>{{content}}<|end|><|start|>assistant"
+      ]
+    },
+    "format_assistant": {
+      "slots": [
+        "{{content}}<|end|>"
+      ]
+    },
+    "format_system": {
+      "slots": [
+        "<|start|>system<|message|>{{content}}<|end|>"
+      ]
+    },
+    "thought_words": [
+      "<|channel|>analysis<|message|>",
+      "<|end|><|start|>assistant<|channel|>final<|message|>"
+    ],
+    "default_system": "You are ChatGPT, a large language model trained by OpenAI.",
+    "efficient_eos": true,
+    "template_class": "ReasoningTemplate"
+  },
+  {
+    "name": "deepseek4",
+    "stop_words": [
+      "<｜end▁of▁sentence｜>"
+    ],
+    "thought_words": [
+      "<think>",
+      "</think>"
+    ],
+    "efficient_eos": false,
+    "replace_eos": false,
+    "template_class": "DeepSeek4Template"
+  }
+]

@@ -1,0 +1,1163 @@
+{
+  "model_mappings": {
+    "base": {
+      "config_set_value": {
+        "seq_length": 4096,
+        "global_batch_size": 1024,
+        "add_position_embedding": true,
+        "use_rotary_position_embeddings": true,
+        "add_bias_linear": false,
+        "gradient_accumulation_fusion": false,
+        "normalization": "RMSNorm",
+        "swiglu": true,
+        "tokenizer_type": "Llama2Tokenizer",
+        "group_query_attention": false,
+        "qkv_type": "unpack",
+        "fc_type": "gate_up_down"
+      },
+      "config_hf_key_mapping": {
+        "max_position_embeddings": "max_position_embeddings",
+        "hidden_size": "hidden_size",
+        "num_attention_heads": "num_attention_heads",
+        "num_layers": "num_hidden_layers",
+        "num_key_value_heads": "num_key_value_heads",
+        "vocab_size": "vocab_size",
+        "intermediate_size": "intermediate_size",
+        "norm_epsilon": "rms_norm_eps",
+        "tie_word_embeddings": "tie_word_embeddings",
+        "torch_dtype": "torch_dtype"
+      },
+      "model_hf_key_mapping": {
+        "model": "module[0]",
+        "embedding_word_embeddings": "model.embed_tokens",
+        "embedding_word_embeddings_norm": "model.embedding.word_embeddings.norm",
+        "layers": "model.layers",
+        "layers_input_layernorm": "model.layers[layer_idx].input_layernorm",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_proj",
+        "layers_self_attention_linear_k_proj": "model.layers[layer_idx].self_attn.k_proj",
+        "layers_self_attention_linear_v_proj": "model.layers[layer_idx].self_attn.v_proj",
+        "layers_self_attention_pre_mlp_layernorm": "model.layers[layer_idx].post_attention_layernorm",
+        "layers_mlp_gate_proj": "model.layers[layer_idx].mlp.gate_proj",
+        "layers_mlp_up_proj": "model.layers[layer_idx].mlp.up_proj",
+        "layers_mlp_linear_fc2": "model.layers[layer_idx].mlp.down_proj",
+        "final_layernorm": "model.norm",
+        "output_layer": "lm_head"
+      }
+    },
+    "qwen2-moe": {
+      "__base__": "base",
+      "config_set_value": {
+        "seq_length": 4096,
+        "global_batch_size": 64,
+        "qkv_type": "unpack",
+        "mlp_experts_flag": true,
+        "shared_expert_gate": true,
+        "first_k_dense_replace": 0,
+        "moe_layer_freq": 1
+      },
+      "config_hf_key_mapping": {
+        "num_layers": "num_hidden_layers",
+        "norm_epsilon": "rms_norm_eps",
+        "rotary_base": "rope_theta",
+        "moe_intermediate_size": "moe_intermediate_size",
+        "shared_expert_intermediate_size": "shared_expert_intermediate_size"
+      },
+      "model_hf_key_mapping": {
+        "model": "module[0]",
+        "embedding_word_embeddings": "model.embed_tokens",
+        "embedding_word_embeddings_norm": "model.embedding.word_embeddings.norm",
+        "layers": "model.layers",
+        "layers_input_layernorm": "model.layers[layer_idx].input_layernorm",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_proj",
+        "layers_self_attention_linear_k_proj": "model.layers[layer_idx].self_attn.k_proj",
+        "layers_self_attention_linear_v_proj": "model.layers[layer_idx].self_attn.v_proj",
+        "layers_self_attention_pre_mlp_layernorm": "model.layers[layer_idx].post_attention_layernorm",
+        "layers_mlp_router": "model.layers[layer_idx].mlp.gate",
+        "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].gate_proj",
+        "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].up_proj",
+        "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].down_proj",
+        "layers_mlp_shared_expert_gate": "model.layers[layer_idx].mlp.shared_expert_gate",
+        "layers_mlp_shared_experts_gate_proj": "model.layers[layer_idx].mlp.shared_expert.gate_proj",
+        "layers_mlp_shared_experts_up_proj": "model.layers[layer_idx].mlp.shared_expert.up_proj",
+        "layers_mlp_shared_experts_linear_fc2": "model.layers[layer_idx].mlp.shared_expert.down_proj",
+        "final_layernorm": "model.norm",
+        "output_layer": "lm_head"
+      }
+    },
+    "qwen3-moe": {
+      "__base__": "base",
+      "config_set_value": {
+        "seq_length": 4096,
+        "global_batch_size": 64,
+        "qkv_type": "unpack",
+        "mlp_experts_flag": true,
+        "first_k_dense_replace": 0,
+        "moe_layer_freq": 1,
+        "qk_layernorm": true
+      },
+      "config_hf_key_mapping": {
+        "num_layers": "num_hidden_layers",
+        "norm_epsilon": "rms_norm_eps",
+        "rotary_base": "rope_theta",
+        "num_experts": "num_experts",
+        "moe_intermediate_size": "moe_intermediate_size",
+        "kv_channels": "head_dim"
+      },
+      "model_hf_key_mapping": {
+        "model": "module[0]",
+        "embedding_word_embeddings": "model.embed_tokens",
+        "embedding_word_embeddings_norm": "model.embedding.word_embeddings.norm",
+        "layers": "model.layers",
+        "layers_input_layernorm": "model.layers[layer_idx].input_layernorm",
+        "layers_self_attention_q_layernorm": "model.layers[layer_idx].self_attn.q_norm",
+        "layers_self_attention_k_layernorm": "model.layers[layer_idx].self_attn.k_norm",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_proj",
+        "layers_self_attention_linear_k_proj": "model.layers[layer_idx].self_attn.k_proj",
+        "layers_self_attention_linear_v_proj": "model.layers[layer_idx].self_attn.v_proj",
+        "layers_self_attention_pre_mlp_layernorm": "model.layers[layer_idx].post_attention_layernorm",
+        "layers_mlp_router": "model.layers[layer_idx].mlp.gate",
+        "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].gate_proj",
+        "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].up_proj",
+        "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].down_proj",
+        "final_layernorm": "model.norm",
+        "output_layer": "lm_head"
+      }
+    },
+    "qwen3": {
+      "__base__": "base",
+      "config_set_value": {
+        "seq_length": 4096,
+        "global_batch_size": 64,
+        "qkv_type": "unpack",
+        "qk_layernorm": true
+      },
+      "config_hf_key_mapping": {
+        "num_layers": "num_hidden_layers",
+        "norm_epsilon": "rms_norm_eps",
+        "rotary_base": "rope_theta",
+        "kv_channels": "head_dim"
+      },
+      "model_hf_key_mapping": {
+        "model": "module[0]",
+        "embedding_word_embeddings": "model.embed_tokens",
+        "embedding_word_embeddings_norm": "model.embedding.word_embeddings.norm",
+        "layers": "model.layers",
+        "layers_input_layernorm": "model.layers[layer_idx].input_layernorm",
+        "layers_self_attention_q_layernorm": "model.layers[layer_idx].self_attn.q_norm",
+        "layers_self_attention_k_layernorm": "model.layers[layer_idx].self_attn.k_norm",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_proj",
+        "layers_self_attention_linear_k_proj": "model.layers[layer_idx].self_attn.k_proj",
+        "layers_self_attention_linear_v_proj": "model.layers[layer_idx].self_attn.v_proj",
+        "layers_self_attention_pre_mlp_layernorm": "model.layers[layer_idx].post_attention_layernorm",
+        "layers_mlp_gate_proj": "model.layers[layer_idx].mlp.gate_proj",
+        "layers_mlp_up_proj": "model.layers[layer_idx].mlp.up_proj",
+        "layers_mlp_linear_fc2": "model.layers[layer_idx].mlp.down_proj",
+        "final_layernorm": "model.norm",
+        "output_layer": "lm_head"
+      }
+    },
+    "glm45-air": {
+      "__base__": "base",
+      "config_set_value": {
+        "seq_length": 4096,
+        "global_batch_size": 64,
+        "qkv_type": "unpack",
+        "mlp_experts_flag": true,
+        "first_k_dense_replace": 1,
+        "moe_layer_freq": 1,
+        "qk_layernorm": false,
+        "add_qkv_bias": true,
+        "router_bias": false
+      },
+      "config_hf_key_mapping": {
+        "num_layers": "num_hidden_layers",
+        "norm_epsilon": "rms_norm_eps",
+        "rotary_base": "rope_theta",
+        "num_experts": "n_routed_experts",
+        "moe_intermediate_size": "moe_intermediate_size",
+        "kv_channels": "head_dim",
+        "n_shared_experts": "n_shared_experts"
+      },
+      "model_hf_key_mapping": {
+        "embedding_word_embeddings": "model.embed_tokens",
+        "layers_input_layernorm": "model.layers[layer_idx].input_layernorm",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_proj",
+        "layers_self_attention_linear_k_proj": "model.layers[layer_idx].self_attn.k_proj",
+        "layers_self_attention_linear_v_proj": "model.layers[layer_idx].self_attn.v_proj",
+        "layers_self_attention_pre_mlp_layernorm": "model.layers[layer_idx].post_attention_layernorm",
+        "layers_mlp_router": "model.layers[layer_idx].mlp.gate",
+        "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].gate_proj",
+        "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].up_proj",
+        "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].down_proj",
+        "layers_mlp_shared_experts_gate_proj": "model.layers[layer_idx].mlp.shared_experts.gate_proj",
+        "layers_mlp_shared_experts_up_proj": "model.layers[layer_idx].mlp.shared_experts.up_proj",
+        "layers_mlp_shared_experts_linear_fc2": "model.layers[layer_idx].mlp.shared_experts.down_proj",
+        "mtp_layers_enorm": "model.layers[layer_idx].enorm",
+        "mtp_layers_hnorm": "model.layers[layer_idx].hnorm",
+        "mtp_layers_eh_proj": "model.layers[layer_idx].eh_proj",
+        "layers_mlp_router_bias": "model.layers[layer_idx].mlp.gate.e_score_correction_bias",
+        "mtp_layers_shared_head_norm": "model.layers[layer_idx].shared_head.norm",
+        "mtp_layers_shared_head_head": "model.layers[layer_idx].shared_head.head",
+        "mtp_layers_embed_tokens": "model.layers[layer_idx].embed_tokens",
+        "final_layernorm": "model.norm",
+        "output_layer": "lm_head"
+      }
+    },
+    "glm45": {
+      "__base__": "base",
+      "config_set_value": {
+        "seq_length": 4096,
+        "global_batch_size": 64,
+        "qkv_type": "unpack",
+        "mlp_experts_flag": true,
+        "first_k_dense_replace": 3,
+        "moe_layer_freq": 1,
+        "qk_layernorm": true,
+        "add_qkv_bias": true,
+        "router_bias": false
+      },
+      "config_hf_key_mapping": {
+        "num_layers": "num_hidden_layers",
+        "norm_epsilon": "rms_norm_eps",
+        "rotary_base": "rope_theta",
+        "num_experts": "n_routed_experts",
+        "moe_intermediate_size": "moe_intermediate_size",
+        "kv_channels": "head_dim",
+        "n_shared_experts": "n_shared_experts"
+      },
+      "model_hf_key_mapping": {
+        "embedding_word_embeddings": "model.embed_tokens",
+        "layers_input_layernorm": "model.layers[layer_idx].input_layernorm",
+        "layers_self_attention_q_layernorm": "model.layers[layer_idx].self_attn.q_norm",
+        "layers_self_attention_k_layernorm": "model.layers[layer_idx].self_attn.k_norm",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_proj",
+        "layers_self_attention_linear_k_proj": "model.layers[layer_idx].self_attn.k_proj",
+        "layers_self_attention_linear_v_proj": "model.layers[layer_idx].self_attn.v_proj",
+        "layers_self_attention_pre_mlp_layernorm": "model.layers[layer_idx].post_attention_layernorm",
+        "layers_mlp_router": "model.layers[layer_idx].mlp.gate",
+        "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].gate_proj",
+        "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].up_proj",
+        "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].down_proj",
+        "layers_mlp_shared_experts_gate_proj": "model.layers[layer_idx].mlp.shared_experts.gate_proj",
+        "layers_mlp_shared_experts_up_proj": "model.layers[layer_idx].mlp.shared_experts.up_proj",
+        "layers_mlp_shared_experts_linear_fc2": "model.layers[layer_idx].mlp.shared_experts.down_proj",
+        "mtp_layers_enorm": "model.layers[layer_idx].enorm",
+        "mtp_layers_hnorm": "model.layers[layer_idx].hnorm",
+        "mtp_layers_eh_proj": "model.layers[layer_idx].eh_proj",
+        "layers_mlp_router_bias": "model.layers[layer_idx].mlp.gate.e_score_correction_bias",
+        "mtp_layers_shared_head_norm": "model.layers[layer_idx].shared_head.norm",
+        "mtp_layers_shared_head_head": "model.layers[layer_idx].shared_head.head",
+        "mtp_layers_embed_tokens": "model.layers[layer_idx].embed_tokens",
+        "final_layernorm": "model.norm",
+        "output_layer": "lm_head"
+      }
+    },
+    "llama2": {
+      "__base__": "base"
+    },
+    "baichuan": {
+      "__base__": "base",
+      "config_set_value": {
+        "qkv_type": "pack_gqa"
+      },
+      "model_hf_key_mapping": {
+        "layers_self_attention_linear_qkv_pack": "model.layers[layer_idx].self_attn.W_pack"
+      }
+    },
+    "chatglm3": {
+      "__base__": "base",
+      "config_set_value": {
+        "seq_length": 32768,
+        "global_batch_size": 16,
+        "group_query_attention": true,
+        "qkv_type": "pack_gqa",
+        "fc_type": "h_to_4h"
+      },
+      "config_hf_key_mapping": {
+        "max_position_embeddings": "seq_length",
+        "num_layers": "num_layers",
+        "num_key_value_heads": "multi_query_group_num",
+        "vocab_size": "padded_vocab_size",
+        "intermediate_size": "ffn_hidden_size",
+        "norm_epsilon": "layernorm_epsilon"
+      },
+      "model_hf_key_mapping": {
+        "embedding_word_embeddings": "transformer.embedding.word_embeddings",
+        "layers": "transformer.encoder.layers",
+        "layers_input_layernorm": "transformer.encoder.layers[layer_idx].input_layernorm",
+        "layers_self_attention_linear_qkv_pack": "transformer.encoder.layers[layer_idx].self_attention.query_key_value",
+        "layers_self_attention_linear_proj": "transformer.encoder.layers[layer_idx].self_attention.dense",
+        "layers_self_attention_pre_mlp_layernorm": "transformer.encoder.layers[layer_idx].post_attention_layernorm",
+        "layers_mlp_linear_fc1": "transformer.encoder.layers[layer_idx].mlp.dense_h_to_4h",
+        "layers_mlp_linear_fc2": "transformer.encoder.layers[layer_idx].mlp.dense_4h_to_h",
+        "final_layernorm": "transformer.encoder.final_layernorm",
+        "output_layer": "transformer.output_layer"
+      }
+    },
+    "glm4": {
+      "__base__": "base",
+      "config_set_value": {
+        "seq_length": 32768,
+        "global_batch_size": 16,
+        "group_query_attention": true
+      },
+      "config_hf_key_mapping": {
+        "max_position_embeddings": "seq_length",
+        "num_hidden_layers": "num_layers",
+        "num_key_value_heads": "multi_query_group_num",
+        "vocab_size": "padded_vocab_size",
+        "intermediate_size": "ffn_hidden_size",
+        "rms_norm_eps": "layernorm_epsilon"
+      },
+      "model_hf_key_mapping": {
+        "embedding_word_embeddings": "model.embed_tokens",
+        "layers": "model.layers",
+        "layers_input_layernorm": "model.layers[layer_idx].input_layernorm",
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_proj",
+        "layers_self_attention_linear_k_proj": "model.layers[layer_idx].self_attn.k_proj",
+        "layers_self_attention_linear_v_proj": "model.layers[layer_idx].self_attn.v_proj",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_mlp_linear_fc1": "model.layers[layer_idx].mlp.gate_up_proj",
+        "layers_mlp_linear_fc2": "model.layers[layer_idx].mlp.down_proj",
+        "layers_self_attention_post_attention_layernorm": "model.layers[layer_idx].post_self_attn_layernorm",
+        "layers_self_attention_pre_mlp_layernorm": "model.layers[layer_idx].post_attention_layernorm",
+        "layers_self_attention_post_mlp_layernorm": "model.layers[layer_idx].post_mlp_layernorm",
+        "final_layernorm": "model.norm",
+        "output_layer": "lm_head"
+      }
+    },
+    "mixtral": {
+      "__base__": "base",
+      "model_hf_key_mapping": {
+        "layers_mlp_router": "model.layers[layer_idx].block_sparse_moe.gate",
+        "layers_mlp_experts_gate_proj": "model.layers[layer_idx].block_sparse_moe.experts[expert_idx].w1",
+        "layers_mlp_experts_up_proj": "model.layers[layer_idx].block_sparse_moe.experts[expert_idx].w3",
+        "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].block_sparse_moe.experts[expert_idx].w2"
+      }
+    },
+    "gemma": {
+      "__base__": "base",
+      "config_set_value": {
+        "seq_length": 8192,
+        "tie_word_embeddings": true,
+        "kv_channels": 256
+      }
+    },
+    "gemma2": {
+      "__base__": "base",
+      "config_set_value": {
+        "seq_length": 8192,
+        "tie_word_embeddings": true
+      },
+      "config_hf_key_mapping": {
+        "kv_channels": "head_dim"
+      },
+      "model_hf_key_mapping": {
+        "layers_self_attention_post_attention_layernorm": "model.layers[layer_idx].post_attention_layernorm",
+        "layers_self_attention_pre_mlp_layernorm": "model.layers[layer_idx].pre_feedforward_layernorm",
+        "layers_self_attention_post_mlp_layernorm": "model.layers[layer_idx].post_feedforward_layernorm"
+      }
+    },
+    "bloom": {
+      "__base__": "base",
+      "config_set_value": {
+        "normalization": "LayerNorm",
+        "fc_type": "h_to_4h",
+        "add_bias_linear": true,
+        "swiglu": false,
+        "tie_word_embeddings": true,
+        "seq_length": 2048,
+        "max_position_embeddings": 2048,
+        "intermediate_size": 16384,
+        "embed_layernorm": true,
+        "norm_has_bias": true
+      },
+      "config_hf_key_mapping": {
+        "num_layers": "n_layer",
+        "num_key_value_heads": "n_head",
+        "norm_epsilon": "layer_norm_epsilon",
+        "num_attention_heads": "n_head",
+        "max_position_embeddings": "hidden_size",
+        "intermediate_size": "hidden_size"
+      },
+      "model_hf_key_mapping": {
+        "embedding_word_embeddings": "transformer.word_embeddings",
+        "embedding_word_embeddings_norm": "transformer.word_embeddings_layernorm",
+        "layers": "transformer.h",
+        "layers_input_layernorm": "transformer.h[layer_idx].input_layernorm",
+        "layers_self_attention_linear_qkv": "transformer.h[layer_idx].self_attention.query_key_value",
+        "layers_self_attention_linear_proj": "transformer.h[layer_idx].self_attention.dense",
+        "layers_self_attention_pre_mlp_layernorm": "transformer.h[layer_idx].post_attention_layernorm",
+        "layers_mlp_linear_fc1": "transformer.h[layer_idx].mlp.dense_h_to_4h",
+        "layers_mlp_linear_fc2": "transformer.h[layer_idx].mlp.dense_4h_to_h",
+        "final_layernorm": "transformer.ln_f",
+        "output_layer": "lm_head"
+      }
+    },
+    "bloom_3b": {
+      "__base__": "base",
+      "config_set_value": {
+        "normalization": "LayerNorm",
+        "fc_type": "h_to_4h",
+        "add_bias_linear": true,
+        "swiglu": false,
+        "tie_word_embeddings": true,
+        "seq_length": 2048,
+        "max_position_embeddings": 2048,
+        "intermediate_size": 10240,
+        "embed_layernorm": true,
+        "norm_has_bias": true
+      },
+      "config_hf_key_mapping": {
+        "num_layers": "n_layer",
+        "num_key_value_heads": "n_head",
+        "norm_epsilon": "layer_norm_epsilon",
+        "num_attention_heads": "n_head",
+        "max_position_embeddings": "hidden_size",
+        "intermediate_size": "hidden_size",
+        "hidden_size": "n_embed"
+      },
+      "model_hf_key_mapping": {
+        "embedding_word_embeddings": "transformer.word_embeddings",
+        "embedding_word_embeddings_norm": "transformer.word_embeddings_layernorm",
+        "layers": "transformer.h",
+        "layers_input_layernorm": "transformer.h[layer_idx].input_layernorm",
+        "layers_self_attention_linear_qkv": "transformer.h[layer_idx].self_attention.query_key_value",
+        "layers_self_attention_linear_proj": "transformer.h[layer_idx].self_attention.dense",
+        "layers_self_attention_pre_mlp_layernorm": "transformer.h[layer_idx].post_attention_layernorm",
+        "layers_mlp_linear_fc1": "transformer.h[layer_idx].mlp.dense_h_to_4h",
+        "layers_mlp_linear_fc2": "transformer.h[layer_idx].mlp.dense_4h_to_h",
+        "final_layernorm": "transformer.ln_f",
+        "output_layer": "lm_head"
+      }
+    },
+    "qwen": {
+      "__base__": "base",
+      "config_set_value": {
+        "tokenizer_type": "PretrainedFromHF",
+        "qkv_type": "pack_gqa"
+      },
+      "config_hf_key_mapping": {
+        "norm_epsilon": "layer_norm_epsilon",
+        "num_key_value_heads": "num_attention_heads"
+      },
+      "model_hf_key_mapping": {
+        "embedding_word_embeddings": "transformer.wte",
+        "layers_input_layernorm": "transformer.h[layer_idx].ln_1",
+        "layers_self_attention_linear_proj": "transformer.h[layer_idx].attn.c_proj",
+        "layers_self_attention_linear_qkv_pack": "transformer.h[layer_idx].attn.c_attn",
+        "layers_self_attention_pre_mlp_layernorm": "transformer.h[layer_idx].ln_2",
+        "layers_mlp_gate_proj": "transformer.h[layer_idx].mlp.w2",
+        "layers_mlp_up_proj": "transformer.h[layer_idx].mlp.w1",
+        "layers_mlp_linear_fc2": "transformer.h[layer_idx].mlp.c_proj",
+        "final_layernorm": "transformer.ln_f"
+      }
+    },
+    "internlm2": {
+      "__base__": "base",
+      "config_set_value": {
+        "seq_length": 32768,
+        "group_query_attention": true,
+        "qkv_type": "pack_self"
+      },
+      "model_hf_key_mapping": {
+        "model": "module[tp_rank]",
+        "embedding_word_embeddings": "model.tok_embeddings",
+        "layers": "model.layers",
+        "layers_self_attention_linear_qkv_pack": "model.layers[layer_idx].attention.wqkv",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].attention.wo",
+        "layers_mlp_gate_proj": "model.layers[layer_idx].feed_forward.w1",
+        "layers_mlp_up_proj": "model.layers[layer_idx].feed_forward.w3",
+        "layers_mlp_linear_fc2": "model.layers[layer_idx].feed_forward.w2",
+        "layers_input_layernorm": "model.layers[layer_idx].attention_norm",
+        "layers_self_attention_pre_mlp_layernorm": "model.layers[layer_idx].ffn_norm",
+        "final_layernorm": "model.norm",
+        "output_layer": "output"
+      }
+    },
+    "deepseek2": {
+        "__base__": "base",
+        "config_set_value": {
+          "seq_length": 8192,
+          "global_batch_size": 64,
+          "qkv_type": "pack_mla",
+          "multi_latent_attention": true,
+          "qk_layernorm": true
+        },
+        "config_hf_key_mapping": {
+          "first_k_dense_replace": "first_k_dense_replace",
+          "kv_lora_rank": "kv_lora_rank",
+          "moe_intermediate_size": "moe_intermediate_size",
+          "moe_layer_freq": "moe_layer_freq",
+          "num_experts": "n_routed_experts",
+          "n_shared_experts": "n_shared_experts",
+          "q_lora_rank": "q_lora_rank",
+          "qk_head_dim": "qk_nope_head_dim",
+          "qk_pos_emb_head_dim": "qk_rope_head_dim"
+        },
+        "model_hf_key_mapping": {
+          "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_a_proj",
+          "layers_self_attention_linear_kv_proj": "model.layers[layer_idx].self_attn.kv_a_proj_with_mqa",
+          "layers_self_attention_linear_q_up_proj": "model.layers[layer_idx].self_attn.q_b_proj",
+          "layers_self_attention_linear_kv_up_proj": "model.layers[layer_idx].self_attn.kv_b_proj",
+          "layers_self_attention_q_layernorm": "model.layers[layer_idx].self_attn.q_a_layernorm",
+          "layers_self_attention_kv_layernorm": "model.layers[layer_idx].self_attn.kv_a_layernorm",
+          "layers_mlp_router": "model.layers[layer_idx].mlp.gate",
+          "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].gate_proj",
+          "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].up_proj",
+          "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].down_proj",
+          "layers_mlp_shared_experts_gate_proj": "model.layers[layer_idx].mlp.shared_experts.gate_proj",
+          "layers_mlp_shared_experts_up_proj": "model.layers[layer_idx].mlp.shared_experts.up_proj",
+          "layers_mlp_shared_experts_linear_fc2": "model.layers[layer_idx].mlp.shared_experts.down_proj"
+        }
+    },
+    "deepseek2-lite": {
+        "__base__": "base",
+        "config_set_value": {
+          "seq_length": 8192,
+          "global_batch_size": 64,
+          "qkv_type": "pack_mla",
+          "multi_latent_attention": true,
+          "mlp_experts_flag": true,
+          "qk_layernorm": true
+        },
+        "config_hf_key_mapping": {
+          "first_k_dense_replace": "first_k_dense_replace",
+          "kv_lora_rank": "kv_lora_rank",
+          "moe_intermediate_size": "moe_intermediate_size",
+          "moe_layer_freq": "moe_layer_freq",
+          "num_experts": "n_routed_experts",
+          "n_shared_experts": "n_shared_experts",
+          "q_lora_rank": "q_lora_rank",
+          "qk_head_dim": "qk_nope_head_dim",
+          "qk_pos_emb_head_dim": "qk_rope_head_dim"
+        },
+        "model_hf_key_mapping": {
+          "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_proj",
+          "layers_self_attention_linear_kv_proj": "model.layers[layer_idx].self_attn.kv_a_proj_with_mqa",
+          "layers_self_attention_linear_kv_up_proj": "model.layers[layer_idx].self_attn.kv_b_proj",
+          "layers_self_attention_kv_layernorm": "model.layers[layer_idx].self_attn.kv_a_layernorm",
+          "layers_mlp_router": "model.layers[layer_idx].mlp.gate",
+          "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].gate_proj",
+          "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].up_proj",
+          "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].down_proj",
+          "layers_mlp_shared_experts_gate_proj": "model.layers[layer_idx].mlp.shared_experts.gate_proj",
+          "layers_mlp_shared_experts_up_proj": "model.layers[layer_idx].mlp.shared_experts.up_proj",
+          "layers_mlp_shared_experts_linear_fc2": "model.layers[layer_idx].mlp.shared_experts.down_proj"
+        }
+    },
+    "minicpm": {
+      "__base__": "base",
+      "config_set_value": {
+        "tie_word_embeddings": true
+      }
+    },
+    "minicpm3": {
+      "__base__": "base",
+      "config_set_value": {
+        "seq_length": 32768,
+        "global_batch_size": 64,
+        "qkv_type": "pack_mla",
+        "multi_latent_attention": true,
+        "qk_layernorm": true,
+        "v_head_dim": 64,
+        "tie_word_embeddings": true
+      },
+      "config_hf_key_mapping": {
+        "kv_lora_rank": "kv_lora_rank",
+        "q_lora_rank": "q_lora_rank",
+        "qk_head_dim": "qk_nope_head_dim",
+        "qk_pos_emb_head_dim": "qk_rope_head_dim"
+      },
+      "model_hf_key_mapping": {
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_a_proj",
+        "layers_self_attention_linear_kv_proj": "model.layers[layer_idx].self_attn.kv_a_proj_with_mqa",
+        "layers_self_attention_linear_q_up_proj": "model.layers[layer_idx].self_attn.q_b_proj",
+        "layers_self_attention_linear_kv_up_proj": "model.layers[layer_idx].self_attn.kv_b_proj",
+        "layers_self_attention_q_layernorm": "model.layers[layer_idx].self_attn.q_a_layernorm",
+        "layers_self_attention_kv_layernorm": "model.layers[layer_idx].self_attn.kv_a_layernorm"
+      }
+    },
+    "minicpm-moe": {
+      "__base__": "base",
+      "config_set_value": {
+        "tie_word_embeddings": true
+      },
+      "model_hf_key_mapping": {
+        "embedding_word_embeddings": "model.embed_tokens",
+        "layers": "model.layers",
+        "layers_input_layernorm": "model.layers[layer_idx].input_layernorm",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_proj",
+        "layers_self_attention_linear_k_proj": "model.layers[layer_idx].self_attn.k_proj",
+        "layers_self_attention_linear_v_proj": "model.layers[layer_idx].self_attn.v_proj",
+        "layers_self_attention_pre_mlp_layernorm": "model.layers[layer_idx].post_attention_layernorm",
+        "layers_mlp_router": "model.layers[layer_idx].mlp.gate",
+        "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].w1",
+        "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].w3",
+        "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].w2",
+        "final_layernorm": "model.norm"
+      }
+    },
+    "baichuan2": {
+      "__base__": "base",
+      "config_set_value": {
+        "qkv_type": "pack_gqa",
+        "max_position_embeddings": 4096
+      },
+      "model_hf_key_mapping": {
+        "layers_self_attention_linear_qkv_pack": "model.layers[layer_idx].self_attn.W_pack"
+      }
+    },
+    "phi3.5": {
+      "__base__": "base",
+      "config_set_value": {
+        "qkv_type": "pack_gqa",
+        "fc_type": "gate_up"
+      },
+      "model_hf_key_mapping": {
+        "layers_self_attention_linear_qkv_pack": "model.layers[layer_idx].self_attn.qkv_proj",
+        "layers_mlp_linear_fc1": "model.layers[layer_idx].mlp.gate_up_proj"
+      }
+    },
+    "phi3.5-moe": {
+      "__base__": "base",
+      "config_set_value": {
+        "normalization": "LayerNorm",
+        "moe_flag": true,
+        "add_output_layer_bias": true
+      },
+      "config_hf_key_mapping": {
+        "num_experts": "num_local_experts"
+      },
+      "model_hf_key_mapping": {
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_mlp_router": "model.layers[layer_idx].block_sparse_moe.gate",
+        "layers_mlp_experts_gate_proj": "model.layers[layer_idx].block_sparse_moe.experts[expert_idx].w1",
+        "layers_mlp_experts_up_proj": "model.layers[layer_idx].block_sparse_moe.experts[expert_idx].w3",
+        "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].block_sparse_moe.experts[expert_idx].w2"
+      }
+    },
+    "hunyuan": {
+      "__base__": "base",
+      "config_set_value": {
+        "seq_length": 4096,
+        "global_batch_size": 64,
+        "qkv_type": "unpack",
+        "mlp_experts_flag": true,
+        "first_k_dense_replace": 0,
+        "moe_layer_freq": 1,
+        "qk_layernorm": true,
+        "q_lora_rank": true
+      },
+      "config_hf_key_mapping": {
+        "num_layers": "num_hidden_layers",
+        "moe_intermediate_size": "intermediate_size",
+        "moe_layer_freq": "moe_layer_freq",
+        "num_experts": "num_experts",
+        "n_shared_experts": "num_shared_expert",
+        "norm_epsilon": "rms_norm_eps",
+        "rotary_base": "rope_theta",
+        "shared_expert_intermediate_size": "shared_expert_intermediate_size"
+      },
+      "model_hf_key_mapping": {
+        "model": "module[0]",
+        "embedding_word_embeddings": "model.embed_tokens",
+        "embedding_word_embeddings_norm": "model.embedding.word_embeddings.norm",
+        "layers": "model.layers",
+        "layers_input_layernorm": "model.layers[layer_idx].input_layernorm",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_proj",
+        "layers_self_attention_linear_k_proj": "model.layers[layer_idx].self_attn.k_proj",
+        "layers_self_attention_linear_v_proj": "model.layers[layer_idx].self_attn.v_proj",
+        "layers_self_attention_q_layernorm": "model.layers[layer_idx].self_attn.query_layernorm",
+        "layers_self_attention_k_layernorm": "model.layers[layer_idx].self_attn.key_layernorm",
+        "layers_self_attention_pre_mlp_layernorm": "model.layers[layer_idx].post_attention_layernorm",
+        "layers_mlp_router": "model.layers[layer_idx].mlp.gate.wg",
+        "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].gate_proj",
+        "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].up_proj",
+        "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].down_proj",
+        "layers_mlp_shared_experts_gate_proj": "model.layers[layer_idx].mlp.shared_mlp.gate_proj",
+        "layers_mlp_shared_experts_up_proj": "model.layers[layer_idx].mlp.shared_mlp.up_proj",
+        "layers_mlp_shared_experts_linear_fc2": "model.layers[layer_idx].mlp.shared_mlp.down_proj",
+        "final_layernorm": "model.norm",
+        "output_layer": "lm_head"
+      }
+    },
+  "deepseek3": {
+    "__base__": "base",
+    "config_set_value": {
+      "qkv_type": "pack_mla",
+      "multi_latent_attention": true,
+      "qk_layernorm": true,
+      "router_bias": true
+    },
+    "config_hf_key_mapping": {
+      "first_k_dense_replace": "first_k_dense_replace",
+      "kv_lora_rank": "kv_lora_rank",
+      "moe_intermediate_size": "moe_intermediate_size",
+      "moe_layer_freq": "moe_layer_freq",
+      "num_experts": "n_routed_experts",
+      "n_shared_experts": "n_shared_experts",
+      "q_lora_rank": "q_lora_rank",
+      "qk_head_dim": "qk_nope_head_dim",
+      "qk_pos_emb_head_dim": "qk_rope_head_dim",
+      "v_head_dim": "v_head_dim"
+    },
+    "model_hf_key_mapping": {
+      "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_a_proj",
+      "layers_self_attention_linear_kv_proj": "model.layers[layer_idx].self_attn.kv_a_proj_with_mqa",
+      "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+      "layers_self_attention_linear_q_up_proj": "model.layers[layer_idx].self_attn.q_b_proj",
+      "layers_self_attention_linear_kv_up_proj": "model.layers[layer_idx].self_attn.kv_b_proj",
+      "layers_self_attention_q_layernorm": "model.layers[layer_idx].self_attn.q_a_layernorm",
+      "layers_self_attention_kv_layernorm": "model.layers[layer_idx].self_attn.kv_a_layernorm",
+      "layers_mlp_router": "model.layers[layer_idx].mlp.gate",
+      "layers_mlp_router_bias": "model.layers[layer_idx].mlp.gate.e_score_correction_bias",
+      "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].gate_proj",
+      "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].up_proj",
+      "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].down_proj",
+      "layers_mlp_shared_experts_gate_proj": "model.layers[layer_idx].mlp.shared_experts.gate_proj",
+      "layers_mlp_shared_experts_up_proj": "model.layers[layer_idx].mlp.shared_experts.up_proj",
+      "layers_mlp_shared_experts_linear_fc2": "model.layers[layer_idx].mlp.shared_experts.down_proj",
+      "final_layernorm": "model.norm",
+      "output_layer": "lm_head",
+      "mtp_layers_enorm": "model.layers[layer_idx].enorm",
+      "mtp_layers_hnorm": "model.layers[layer_idx].hnorm",
+      "mtp_layers_eh_proj": "model.layers[layer_idx].eh_proj",
+      "mtp_layers_embed_tokens": "model.layers[layer_idx].embed_tokens",
+      "mtp_layers_shared_head_norm": "model.layers[layer_idx].shared_head.norm"
+    }
+  },
+  "seed-oss": {
+    "__base__": "base",
+    "config_set_value": {
+      "qkv_type": "unpack",
+      "add_qkv_bias": true,
+      "qk_layernorm": false
+    },
+    "config_hf_key_mapping": {
+      "num_layers": "num_hidden_layers",
+      "norm_epsilon": "rms_norm_eps",
+      "rotary_base": "rope_theta",
+      "kv_channels": "head_dim"
+    }
+  },
+    "bailing_mini": {
+      "__base__": "base",
+      "config_set_value": {
+        "qkv_type": "pack_gqa",
+        "qk_layernorm": true,
+        "router_bias": true,
+        "moe_layer_freq": 1
+      },
+      "config_hf_key_mapping": {
+        "first_k_dense_replace": "first_k_dense_replace",
+        "moe_intermediate_size": "moe_intermediate_size",
+        "num_experts": "num_experts",
+        "rotary_base": "rope_theta",
+        "n_shared_experts": "num_shared_experts",
+        "kv_channels": "head_dim"
+      },
+      "model_hf_key_mapping": {
+        "embedding_word_embeddings": "model.word_embeddings",
+        "layers_input_layernorm": "model.layers[layer_idx].input_layernorm",
+        "layers_self_attention_linear_qkv_pack": "model.layers[layer_idx].attention.query_key_value",
+        "layers_self_attention_q_layernorm": "model.layers[layer_idx].attention.query_layernorm",
+        "layers_self_attention_k_layernorm": "model.layers[layer_idx].attention.key_layernorm",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].attention.dense",
+        "layers_self_attention_pre_mlp_layernorm": "model.layers[layer_idx].post_attention_layernorm",
+        "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].gate_proj",
+        "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].up_proj",
+        "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].down_proj",
+        "layers_mlp_router": "model.layers[layer_idx].mlp.gate",
+        "layers_mlp_router_bias": "model.layers[layer_idx].mlp.gate.expert_bias",
+        "layers_mlp_gate_proj": "model.layers[layer_idx].mlp.gate_proj",
+        "layers_mlp_up_proj": "model.layers[layer_idx].mlp.up_proj",
+        "layers_mlp_linear_fc2": "model.layers[layer_idx].mlp.down_proj",
+        "layers_mlp_shared_experts_gate_proj": "model.layers[layer_idx].mlp.shared_experts.gate_proj",
+        "layers_mlp_shared_experts_up_proj": "model.layers[layer_idx].mlp.shared_experts.up_proj",
+        "layers_mlp_shared_experts_linear_fc2": "model.layers[layer_idx].mlp.shared_experts.down_proj",
+        "final_layernorm": "model.norm",
+        "output_layer": "lm_head",
+        "mtp_layers_enorm": "model.layers[layer_idx].enorm",
+        "mtp_layers_hnorm": "model.layers[layer_idx].hnorm",
+        "mtp_layers_eh_proj": "model.layers[layer_idx].eh_proj",
+        "mtp_layers_shared_head_norm": "model.layers[layer_idx].final_layernorm"
+      }
+    },
+    "qwen3-next": {
+      "__base__": "base",
+      "config_set_value": {
+        "seq_length": 4096,
+        "global_batch_size": 64,
+        "qkv_type": "mix",
+        "mlp_experts_flag": true,
+        "first_k_dense_replace": 0,
+        "moe_layer_freq": 1,
+        "n_shared_experts": 1,
+        "qk_layernorm": true,
+        "shared_expert_gate": true,
+        "mtp_reorder_flag": true
+      },
+      "config_hf_key_mapping": {
+        "num_layers": "num_hidden_layers",
+        "norm_epsilon": "rms_norm_eps",
+        "rotary_base": "rope_theta",
+        "num_experts": "num_experts",
+        "moe_intermediate_size": "moe_intermediate_size",
+        "kv_channels": "head_dim",
+        "full_attention_interval": "full_attention_interval"
+      },
+      "model_hf_key_mapping": {
+        "model": "module[0]",
+        "embedding_word_embeddings": "model.embed_tokens",
+        "embedding_word_embeddings_norm": "model.embedding.word_embeddings.norm",
+        "layers": "model.layers",
+        "layers_input_layernorm": "model.layers[layer_idx].input_layernorm",
+        "layers_self_attention_q_layernorm": "model.layers[layer_idx].self_attn.q_norm",
+        "layers_self_attention_k_layernorm": "model.layers[layer_idx].self_attn.k_norm",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_proj",
+        "layers_self_attention_linear_k_proj": "model.layers[layer_idx].self_attn.k_proj",
+        "layers_self_attention_linear_v_proj": "model.layers[layer_idx].self_attn.v_proj",
+        "layers_self_attention_pre_mlp_layernorm": "model.layers[layer_idx].post_attention_layernorm",
+        "layers_mlp_router": "model.layers[layer_idx].mlp.gate",
+        "layers_self_attention_linear_A_log": "model.layers[layer_idx].linear_attn.A_log",
+        "layers_self_attention_linear_conv1d": "model.layers[layer_idx].linear_attn.conv1d",
+        "layers_self_attention_linear_dt_bias": "model.layers[layer_idx].linear_attn.dt_bias",
+        "layers_self_attention_linear_in_proj_ba": "model.layers[layer_idx].linear_attn.in_proj_ba",
+        "layers_self_attention_linear_in_proj_qkvz": "model.layers[layer_idx].linear_attn.in_proj_qkvz",
+        "layers_self_attention_linear_norm": "model.layers[layer_idx].linear_attn.norm",
+        "layers_self_attention_linear_out_proj": "model.layers[layer_idx].linear_attn.out_proj",
+        "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].gate_proj",
+        "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].up_proj",
+        "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].down_proj",
+        "layers_mlp_shared_expert_gate": "model.layers[layer_idx].mlp.shared_expert_gate",
+        "layers_mlp_shared_experts_gate_proj": "model.layers[layer_idx].mlp.shared_expert.gate_proj",
+        "layers_mlp_shared_experts_up_proj": "model.layers[layer_idx].mlp.shared_expert.up_proj",
+        "layers_mlp_shared_experts_linear_fc2": "model.layers[layer_idx].mlp.shared_expert.down_proj",
+        "final_layernorm": "model.norm",
+        "output_layer": "lm_head",
+        "mtp_layers_enorm": "mtp.pre_fc_norm_embedding",
+        "mtp_layers_hnorm": "mtp.pre_fc_norm_hidden",
+        "mtp_layers_eh_proj": "mtp.fc",
+        "mtp_layers_shared_head_norm": "mtp.norm"
+      }
+    },
+    "deepseek32": {
+      "__base__": "base",
+      "config_set_value": {
+        "qkv_type": "pack_mla",
+        "multi_latent_attention": true,
+        "qk_layernorm": true,
+        "router_bias": true,
+        "enable_dsa_indexer": true
+      },
+      "config_hf_key_mapping": {
+        "first_k_dense_replace": "first_k_dense_replace",
+        "kv_lora_rank": "kv_lora_rank",
+        "moe_intermediate_size": "moe_intermediate_size",
+        "moe_layer_freq": "moe_layer_freq",
+        "num_experts": "n_routed_experts",
+        "n_shared_experts": "n_shared_experts",
+        "q_lora_rank": "q_lora_rank",
+        "qk_head_dim": "qk_nope_head_dim",
+        "qk_pos_emb_head_dim": "qk_rope_head_dim",
+        "v_head_dim": "v_head_dim"
+      },
+      "model_hf_key_mapping": {
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_a_proj",
+        "layers_self_attention_linear_kv_proj": "model.layers[layer_idx].self_attn.kv_a_proj_with_mqa",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_self_attention_linear_q_up_proj": "model.layers[layer_idx].self_attn.q_b_proj",
+        "layers_self_attention_linear_kv_up_proj": "model.layers[layer_idx].self_attn.kv_b_proj",
+        "layers_self_attention_q_layernorm": "model.layers[layer_idx].self_attn.q_a_layernorm",
+        "layers_self_attention_kv_layernorm": "model.layers[layer_idx].self_attn.kv_a_layernorm",
+        "layers_self_attention_indexer_k_norm": "model.layers[layer_idx].self_attn.indexer.k_norm",
+        "layers_self_attention_indexer_weights_proj": "model.layers[layer_idx].self_attn.indexer.weights_proj.weight",
+        "layers_self_attention_indexer_wk": "model.layers[layer_idx].self_attn.indexer.wk",
+        "layers_self_attention_indexer_wq_b": "model.layers[layer_idx].self_attn.indexer.wq_b",
+        "layers_mlp_router": "model.layers[layer_idx].mlp.gate",
+        "layers_mlp_router_bias": "model.layers[layer_idx].mlp.gate.e_score_correction_bias",
+        "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].gate_proj",
+        "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].up_proj",
+        "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].down_proj",
+        "layers_mlp_shared_experts_gate_proj": "model.layers[layer_idx].mlp.shared_experts.gate_proj",
+        "layers_mlp_shared_experts_up_proj": "model.layers[layer_idx].mlp.shared_experts.up_proj",
+        "layers_mlp_shared_experts_linear_fc2": "model.layers[layer_idx].mlp.shared_experts.down_proj",
+        "final_layernorm": "model.norm",
+        "output_layer": "lm_head",
+        "mtp_layers_enorm": "model.layers[layer_idx].enorm",
+        "mtp_layers_hnorm": "model.layers[layer_idx].hnorm",
+        "mtp_layers_eh_proj": "model.layers[layer_idx].eh_proj",
+        "mtp_layers_embed_tokens": "model.layers[layer_idx].embed_tokens",
+        "mtp_layers_shared_head_norm": "model.layers[layer_idx].shared_head.norm"
+      }
+    },
+    "deepseek4_base": {
+      "__base__": "deepseek32",
+      "config_set_value": {
+        "qkv_type": "pack_mla",
+        "multi_latent_attention": true,
+        "qk_layernorm": true,
+        "router_bias": true,
+        "enable_dsa_indexer": true,
+        "first_k_dense_replace": 0
+      },
+      "config_hf_key_mapping": {
+        "first_k_dense_replace": "None",
+        "kv_lora_rank": "None",
+        "moe_intermediate_size": "None",
+        "moe_layer_freq": "moe_layer_freq",
+        "num_experts": "n_routed_experts",
+        "n_shared_experts": "n_shared_experts",
+        "q_lora_rank": "q_lora_rank",
+        "qk_head_dim": "head_dim",
+        "qk_pos_emb_head_dim": "rope_head_dim",
+        "num_layers": "num_hidden_layers",
+        "hidden_size": "hidden_size",
+        "num_attention_heads": "num_attention_heads",
+        "compress_ratios": "compress_ratios",
+        "n_hash_layers": "num_hash_layers"
+      },
+      "model_hf_key_mapping": {
+        "embedding_word_embeddings": "embed.weight",
+        "layers_self_attention_attn_sink": "layers[layer_idx].attn.attn_sink",
+        "layers_self_attention_kv_layernorm": "layers[layer_idx].attn.kv_norm.weight",
+        "layers_self_attention_q_layernorm": "layers[layer_idx].attn.q_norm.weight",
+        "layers_self_attention_linear_o_down_proj": "layers[layer_idx].attn.wo_a.weight",
+        "layers_self_attention_linear_kv": "layers[layer_idx].attn.wkv.weight",
+        "layers_self_attention_linear_o_up_proj": "layers[layer_idx].attn.wo_b.weight",
+        "layers_self_attention_linear_q": "layers[layer_idx].attn.wq_a.weight",
+        "layers_self_attention_linear_q_up_proj": "layers[layer_idx].attn.wq_b.weight",
+        "layers_self_attention_compressor_ape": "layers[layer_idx].attn.compressor.ape",
+        "layers_self_attention_indexer_kv_compressor_ape": "layers[layer_idx].attn.indexer.compressor.ape",
+        "layers_self_attention_compressor_norm": "layers[layer_idx].attn.compressor.norm.weight",
+        "layers_self_attention_compressor_wgate": "layers[layer_idx].attn.compressor.wgate.weight",
+        "layers_self_attention_compressor_wkv": "layers[layer_idx].attn.compressor.wkv.weight",
+        "layers_self_attention_indexer_compressor_norm": "layers[layer_idx].attn.indexer.compressor.norm.weight",
+        "layers_self_attention_indexer_compressor_wgate": "layers[layer_idx].attn.indexer.compressor.wgate.weight",
+        "layers_self_attention_indexer_compressor_wkv": "layers[layer_idx].attn.indexer.compressor.wkv.weight",
+        "layers_input_layernorm": "layers[layer_idx].attn_norm.weight",
+        "layers_mlp_router": "layers[layer_idx].ffn.gate.weight",
+        "layers_mlp_router_tid2eid": "layers[layer_idx].ffn.gate.tid2eid",
+        "layers_pre_mlp_layernorm": "layers[layer_idx].ffn_norm.weight",
+        "layers_mlp_experts_up_proj": "layers[layer_idx].ffn.experts[expert_idx].w1",
+        "layers_mlp_experts_linear_fc2": "layers[layer_idx].ffn.experts[expert_idx].w2",
+        "layers_mlp_experts_gate_proj": "layers[layer_idx].ffn.experts[expert_idx].w3",
+        "layers_mlp_shared_experts_up_proj": "layers[layer_idx].ffn.shared_experts.w1",
+        "layers_mlp_shared_experts_linear_fc2": "layers[layer_idx].ffn.shared_experts.w2",
+        "layers_mlp_shared_experts_gate_proj": "layers[layer_idx].ffn.shared_experts.w3",
+        "layers_attn_mhc_hc_base": "layers[layer_idx].hc_attn_base",
+        "layers_attn_mhc_hc_fn": "layers[layer_idx].hc_attn_fn",
+        "layers_attn_mhc_hc_scale": "layers[layer_idx].hc_attn_scale",
+        "layers_mlp_mhc_hc_base": "layers[layer_idx].hc_ffn_base",
+        "layers_mlp_mhc_hc_fn": "layers[layer_idx].hc_ffn_fn",
+        "layers_mlp_mhc_hc_scale": "layers[layer_idx].hc_ffn_scale",
+        "layers_hc_head_hc_base": "layers.hc_head_base",
+        "layers_hc_head_hc_fn": "layers.hc_head_fn",
+        "layers_hc_head_hc_scale": "layers.hc_head_scale",
+        "final_layernorm": "norm.weight",
+        "output_layer": "head.weight",
+        "mtp_layers_self_attention_attn_sink": "mtp.[layer_idx].attn.attn_sink",
+        "mtp_layers_self_attention_kv_layernorm": "mtp.[layer_idx].attn.kv_norm.weight",
+        "mtp_layers_self_attention_q_layernorm": "mtp.[layer_idx].attn.q_norm.weight",
+        "mtp_layers_self_attention_linear_o_down_proj": "mtp.[layer_idx].attn.wo_a",
+        "mtp_layers_self_attention_linear_kv": "mtp.[layer_idx].attn.wkv.weight",
+        "mtp_layers_self_attention_linear_o_up_proj": "mtp.[layer_idx].attn.wo_b.weight",
+        "mtp_layers_self_attention_linear_q": "mtp.[layer_idx].attn.wq_a.weight",
+        "mtp_layers_self_attention_linear_q_up_proj": "mtp.[layer_idx].attn.wq_b.weight",
+        "mtp_layers_input_layernorm": "mtp.[layer_idx].attn_norm.weight",
+        "mtp_layers_pre_mlp_layernorm": "mtp.[layer_idx].ffn_norm.weight",
+        "mtp_layers_mlp_router": "mtp.[layer_idx].ffn.gate.weight",
+        "mtp_layers_mlp_router_bias": "mtp.[layer_idx].ffn.gate.bias",
+        "mtp_layers_mlp_experts_up_proj": "mtp.[layer_idx].ffn.experts[expert_idx].w1",
+        "mtp_layers_mlp_experts_linear_fc2": "mtp.[layer_idx].ffn.experts[expert_idx].w2",
+        "mtp_layers_mlp_experts_gate_proj": "mtp.[layer_idx].ffn.experts[expert_idx].w3",
+        "mtp_layers_mlp_shared_experts_up_proj": "mtp.[layer_idx].ffn.shared_experts.w1",
+        "mtp_layers_mlp_shared_experts_linear_fc2": "mtp.[layer_idx].ffn.shared_experts.w2",
+        "mtp_layers_mlp_shared_experts_gate_proj": "mtp.[layer_idx].ffn.shared_experts.w3",
+        "mtp_layers_attn_mhc_hc_base": "mtp.[layer_idx].hc_attn_base",
+        "mtp_layers_attn_mhc_hc_fn": "mtp.[layer_idx].hc_attn_fn",
+        "mtp_layers_attn_mhc_hc_scale": "mtp.[layer_idx].hc_attn_scale",
+        "mtp_layers_mlp_mhc_hc_base": "mtp.[layer_idx].hc_ffn_base",
+        "mtp_layers_mlp_mhc_hc_fn": "mtp.[layer_idx].hc_ffn_fn",
+        "mtp_layers_mlp_mhc_hc_scale": "mtp.[layer_idx].hc_ffn_scale",
+        "mtp_layers_hc_head_hc_base": "mtp.[layer_idx].hc_head_base",
+        "mtp_layers_hc_head_hc_fn": "mtp.[layer_idx].hc_head_fn",
+        "mtp_layers_hc_head_hc_scale": "mtp.[layer_idx].hc_head_scale",
+        "mtp_layers_enorm": "mtp.[layer_idx].enorm.weight",
+        "mtp_layers_hnorm": "mtp.[layer_idx].hnorm.weight",
+        "mtp_layers_eh_proj": "mtp.[layer_idx].eh_proj.weight",
+        "mtp_layers_norm": "mtp.[layer_idx].norm.weight"
+      }
+    },
+    "deepseek4": {
+      "__base__": "deepseek4_base",
+      "config_set_value": {
+        "tie_mtp_embeddings_and_lmhead": "true"
+      }
+    },
+    "magistral": {
+      "__base__": "base",
+      "config_set_value": {
+        "qkv_type": "unpack",
+        "tokenizer_type": "MagistralTokenizer",
+        "num_query_groups": 8,
+        "qk_layernorm": false
+      },
+      "config_hf_key_mapping": {
+        "num_layers": "num_hidden_layers",
+        "norm_epsilon": "rms_norm_eps",
+        "rotary_base": "rope_theta",
+        "kv_channels": "head_dim"
+      }
+    },
+    "plm": {
+      "__base__": "base",
+      "config_set_value": {
+        "v_head_dim": 128,
+        "qkv_type": "pack_mla",
+        "multi_latent_attention": true,
+        "tie_word_embeddings": true,
+        "qk_layernorm": true,
+        "fc_type": "up_down"
+      },
+      "config_hf_key_mapping": {
+        "rotary_base": "rope_theta",
+        "kv_lora_rank": "kv_lora_rank",
+        "q_lora_rank": "q_lora_rank",
+        "qk_head_dim": "qk_nope_head_dim",
+        "qk_pos_emb_head_dim": "qk_rope_head_dim"
+      },
+      "model_hf_key_mapping": {
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_proj",
+        "layers_self_attention_linear_kv_proj": "model.layers[layer_idx].self_attn.kv_a_proj_with_mqa",
+        "layers_self_attention_kv_layernorm": "model.layers[layer_idx].self_attn.kv_a_layernorm",
+        "layers_self_attention_linear_kv_up_proj": "model.layers[layer_idx].self_attn.kv_b_proj",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_mlp_up_proj": "model.layers[layer_idx].mlp.up_proj",
+        "layers_mlp_linear_fc2": "model.layers[layer_idx].mlp.down_proj",
+        "final_layernorm": "model.norm",
+        "output_layer": "lm_head"
+      }
+    },
+    "longcat": {
+      "__base__": "base",
+      "config_set_value": {
+        "qkv_type": "pack_mla",
+        "transformerlayer_type": "longcat",
+        "multi_latent_attention": true,
+        "qk_layernorm": true,
+        "router_bias": true,
+        "torch_dtype": "bfloat16"
+      },
+      "config_hf_key_mapping": {
+        "num_layers": "num_layers",
+        "num_key_value_heads": "num_attention_heads",
+        "intermediate_size": "ffn_hidden_size",
+        "moe_intermediate_size": "expert_ffn_hidden_size",
+        "num_experts": "n_routed_experts",
+        "kv_lora_rank": "kv_lora_rank",
+        "q_lora_rank": "q_lora_rank",
+        "qk_head_dim": "qk_nope_head_dim",
+        "qk_pos_emb_head_dim": "qk_rope_head_dim",
+        "v_head_dim": "v_head_dim",
+        "tie_word_embeddings": "None",
+        "torch_dtype": "None",
+        "num_zero_experts": "zero_expert_num"
+      },
+      "model_hf_key_mapping": {
+        "layers_input_layernorm0": "model.layers[layer_idx].input_layernorm.0",
+        "layers_self_attention0_linear_q_proj": "model.layers[layer_idx].self_attn.0.q_a_proj",
+        "layers_self_attention0_linear_kv_proj": "model.layers[layer_idx].self_attn.0.kv_a_proj_with_mqa",
+        "layers_self_attention0_linear_proj": "model.layers[layer_idx].self_attn.0.o_proj",
+        "layers_self_attention0_linear_q_up_proj": "model.layers[layer_idx].self_attn.0.q_b_proj",
+        "layers_self_attention0_linear_kv_up_proj": "model.layers[layer_idx].self_attn.0.kv_b_proj",
+        "layers_self_attention0_q_layernorm": "model.layers[layer_idx].self_attn.0.q_a_layernorm",
+        "layers_self_attention0_kv_layernorm": "model.layers[layer_idx].self_attn.0.kv_a_layernorm",
+        "layers_self_attention0_pre_mlp_layernorm": "model.layers[layer_idx].post_attention_layernorm.0",
+        "layers_mlp_router_bias": "model.layers[layer_idx].mlp.router.e_score_correction_bias",
+        "layers_mlp_router": "model.layers[layer_idx].mlp.router.classifier",
+        "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].gate_proj",
+        "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].up_proj",
+        "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].down_proj",
+        "layers_mlp0_gate_proj": "model.layers[layer_idx].mlps.0.gate_proj",
+        "layers_mlp0_up_proj": "model.layers[layer_idx].mlps.0.up_proj",
+        "layers_mlp0_linear_fc2": "model.layers[layer_idx].mlps.0.down_proj",
+
+        "layers_input_layernorm1": "model.layers[layer_idx].input_layernorm.1",
+        "layers_self_attention1_linear_q_proj": "model.layers[layer_idx].self_attn.1.q_a_proj",
+        "layers_self_attention1_linear_kv_proj": "model.layers[layer_idx].self_attn.1.kv_a_proj_with_mqa",
+        "layers_self_attention1_linear_proj": "model.layers[layer_idx].self_attn.1.o_proj",
+        "layers_self_attention1_linear_q_up_proj": "model.layers[layer_idx].self_attn.1.q_b_proj",
+        "layers_self_attention1_linear_kv_up_proj": "model.layers[layer_idx].self_attn.1.kv_b_proj",
+        "layers_self_attention1_q_layernorm": "model.layers[layer_idx].self_attn.1.q_a_layernorm",
+        "layers_self_attention1_kv_layernorm": "model.layers[layer_idx].self_attn.1.kv_a_layernorm",
+        "layers_self_attention1_pre_mlp_layernorm": "model.layers[layer_idx].post_attention_layernorm.1",
+        "layers_mlp1_gate_proj": "model.layers[layer_idx].mlps.1.gate_proj",
+        "layers_mlp1_up_proj": "model.layers[layer_idx].mlps.1.up_proj",
+        "layers_mlp1_linear_fc2": "model.layers[layer_idx].mlps.1.down_proj"
+      }
+    },
+    "glm5": {
+      "__base__": "base",
+      "config_set_value": {
+        "qkv_type": "pack_mla",
+        "multi_latent_attention": true,
+        "qk_layernorm": true,
+        "router_bias": true,
+        "enable_dsa_indexer": true,
+        "moe_grouped_gemm": true,
+        "first_k_dense_replace": 3,
+        "torch_dtype": "bfloat16"
+      },
+      "config_hf_key_mapping": {
+        "torch_dtype": "dtype",
+        "kv_lora_rank": "kv_lora_rank",
+        "q_lora_rank": "q_lora_rank",
+        "v_head_dim": "v_head_dim",
+        "qk_head_dim": "qk_nope_head_dim",
+        "qk_pos_emb_head_dim": "qk_rope_head_dim",
+        "num_experts": "n_routed_experts",
+        "moe_intermediate_size": "moe_intermediate_size",
+        "moe_layer_freq": "moe_layer_freq",
+        "n_shared_experts": "n_shared_experts"
+      },
+      "model_hf_key_mapping": {
+        "layers_self_attention_linear_q_proj": "model.layers[layer_idx].self_attn.q_a_proj",
+        "layers_self_attention_linear_kv_proj": "model.layers[layer_idx].self_attn.kv_a_proj_with_mqa",
+        "layers_self_attention_linear_proj": "model.layers[layer_idx].self_attn.o_proj",
+        "layers_self_attention_linear_q_up_proj": "model.layers[layer_idx].self_attn.q_b_proj",
+        "layers_self_attention_linear_kv_up_proj": "model.layers[layer_idx].self_attn.kv_b_proj",
+        "layers_self_attention_q_layernorm": "model.layers[layer_idx].self_attn.q_a_layernorm",
+        "layers_self_attention_kv_layernorm": "model.layers[layer_idx].self_attn.kv_a_layernorm",
+        "layers_self_attention_indexer_k_norm": "model.layers[layer_idx].self_attn.indexer.k_norm",
+        "layers_self_attention_indexer_weights_proj": "model.layers[layer_idx].self_attn.indexer.weights_proj.weight",
+        "layers_self_attention_indexer_wk": "model.layers[layer_idx].self_attn.indexer.wk",
+        "layers_self_attention_indexer_wq_b": "model.layers[layer_idx].self_attn.indexer.wq_b",
+        "layers_mlp_router": "model.layers[layer_idx].mlp.gate",
+        "layers_mlp_router_bias": "model.layers[layer_idx].mlp.gate.e_score_correction_bias",
+        "layers_mlp_experts_gate_proj": "model.layers[layer_idx].mlp.experts[expert_idx].gate_proj",
+        "layers_mlp_experts_up_proj": "model.layers[layer_idx].mlp.experts[expert_idx].up_proj",
+        "layers_mlp_experts_linear_fc2": "model.layers[layer_idx].mlp.experts[expert_idx].down_proj",
+        "layers_mlp_shared_experts_gate_proj": "model.layers[layer_idx].mlp.shared_experts.gate_proj",
+        "layers_mlp_shared_experts_up_proj": "model.layers[layer_idx].mlp.shared_experts.up_proj",
+        "layers_mlp_shared_experts_linear_fc2": "model.layers[layer_idx].mlp.shared_experts.down_proj",
+        "final_layernorm": "model.norm",
+        "output_layer": "lm_head",
+        "mtp_layers_enorm": "model.layers[layer_idx].enorm",
+        "mtp_layers_hnorm": "model.layers[layer_idx].hnorm",
+        "mtp_layers_eh_proj": "model.layers[layer_idx].eh_proj",
+        "mtp_layers_shared_head_norm": "model.layers[layer_idx].shared_head.norm"
+      }
+    }
+  }
+}
