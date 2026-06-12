@@ -6,7 +6,18 @@ from importlib import import_module
 from typing import Any
 
 _MODEL_MODULES = {
+    "llama_loop": "modeling.llama_loop",
+    "llama_new": "modeling.llama_new",
+    "llama_orin": "modeling.llama_orin",
     "llama_orin_ssm": "modeling.llama_orin_ssm",
+    "llama_ours": "modeling.llama_ours",
+    "llama_pause": "modeling.llama_pause",
+    "modeling_llama_loop": "modeling.llama_loop",
+    "modeling_llama_new": "modeling.llama_new",
+    "modeling_llama_orin": "modeling.llama_orin",
+    "modeling_llama_orin_legacylegacy": "modeling.llama_orin",
+    "modeling_llama_ours": "modeling.llama_ours",
+    "modeling_llama_pause": "modeling.llama_pause",
 }
 
 

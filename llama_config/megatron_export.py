@@ -24,17 +24,18 @@ def add_repo_to_path() -> None:
 def apply_llamafactory_model_args(config: LlamaConfig, args: argparse.Namespace) -> None:
     """Mirror the LLaMA-Factory model_args fields required by this Megatron backend."""
 
+    def arg(name: str, default: Any) -> Any:
+        return getattr(args, name, default)
+
     llama_factory_defaults = {
         "output_hidden_states": False,
         "ponder_size": 48,
         "is_normalize_hidden_states": False,
         "normalize_topk_sample": False,
         "hidden_layer_num": -2,
-        "more_eval_iterations": 0,
         "vary_position": False,
         "add_loss_for_ponderer": False,
         "replace_embeddings": False,
-        "softmax_temperature": 1.0,
         "add_ponderer_token": False,
         "memory_output_gate": False,
         "memory_mix_gate": False,
@@ -50,9 +51,9 @@ def apply_llamafactory_model_args(config: LlamaConfig, args: argparse.Namespace)
         "use_all_logits": False,
         "interpolation_use_topk": False,
         "stage_router_update_w": False,
-        "training_refinement_steps": 5,
-        "eval_refinement_steps": 5,
-        "interpolation": False,
+        "training_refinement_steps": arg("training_refinement_steps", 5),
+        "eval_refinement_steps": arg("eval_refinement_steps", 10),
+        "interpolation": arg("interpolation", False),
         "use_anderson": True,
         "anderson_depth": 2,
         "anderson_beta": 1.0,
@@ -60,7 +61,7 @@ def apply_llamafactory_model_args(config: LlamaConfig, args: argparse.Namespace)
         "anderson_convex_only": True,
         "anderson_residual_increase_thr": 1.05,
         "anderson_reset_interval": 0,
-        "consistency_weight": 0.0,
+        "consistency_weight": arg("consistency_weight", 0.0),
         "ponder_ent_lambda_start": 0.0,
         "ponder_ent_lambda_max": 0.2,
         "ponder_ent_warmup_steps": 1000,
@@ -77,30 +78,36 @@ def apply_llamafactory_model_args(config: LlamaConfig, args: argparse.Namespace)
         "weight_dist_lambda_max": 0.1,
         "weight_dist_warmup_steps": 1000,
         "weight_dist_peak_steps": 4000,
-        "min_weight_penalty_lambda_start": 0.0,
-        "min_weight_penalty_lambda_max": 0.0,
-        "min_weight_penalty_warmup_steps": 1000,
-        "min_weight_penalty_peak_steps": 4000,
-        "min_weight_penalty_method": "accuracy",
+        "min_weight_penalty_lambda_start": arg("min_weight_penalty_lambda_start", 0.0),
+        "min_weight_penalty_lambda_max": arg("min_weight_penalty_lambda_max", 0.0),
+        "min_weight_penalty_warmup_steps": arg("min_weight_penalty_warmup_steps", 1000),
+        "min_weight_penalty_peak_steps": arg("min_weight_penalty_peak_steps", 4000),
+        "min_weight_penalty_method": arg("min_weight_penalty_method", "accuracy"),
         "delta_method": "neg",
         "sigma_slope": 50.0,
-        "last_n_steps_update_w": 1,
-        "damping_alpha": 1.0,
+        "last_n_steps_update_w": arg("last_n_steps_update_w", 1),
+        "damping_alpha": arg("damping_alpha", 0.1),
         "anderson_ridge": 1e-5,
         "sigma_2": False,
     }
     for key, value in llama_factory_defaults.items():
         setattr(config, key, value)
 
-    config.more_iterations = args.more_iterations
+    config.more_iterations = arg("more_iterations", 3)
+    config.more_eval_iterations = arg("more_eval_iterations", 0)
     config.recurrent_model = True
-    config.memory_size = args.memory_size
+    config.memory_size = arg("memory_size", 1024)
+    config.pause_token_id = arg("pause_token_id", 50288)
+    config.softmax_temperature = arg("softmax_temperature", 1.0)
+    config.interpolation_use_topk = arg("interpolation_use_topk", False)
+    config.interpolation_topk = arg("interpolation_topk", 100)
+    config.top_k_num = arg("interpolation_topk", 100)
     config.loop_mamba_variant = args.loop_mamba_variant
     config.loop_mamba_n_groups = args.loop_mamba_n_groups
-    config.scale_embeds = True
-    config.residual_interpolated_embeds = True
+    config.scale_embeds = arg("scale_embeds", True)
+    config.residual_interpolated_embeds = arg("residual_interpolated_embeds", True)
     config.max_position_embeddings = args.model_max_position_embeddings
-    config.vary_refine_steps = True
+    config.vary_refine_steps = arg("vary_refine_steps", True)
     config.classifier_dropout = 0
 
 

@@ -251,6 +251,7 @@ def transformer_block_forward(
     rotary_pos_sin: Tensor = None,
     inference_params: InferenceParams = None,
     inference_context: Optional[BaseInferenceContext] = None,
+    attention_bias: Tensor = None,
     packed_seq_params: PackedSeqParams = None,
     sequence_len_offset: Tensor = None,
     input_ids: Tensor = None,
@@ -348,7 +349,7 @@ def transformer_block_forward(
                         context=context,
                         context_mask=context_mask,
                         rotary_pos_emb=rotary_pos_emb,
-                        attention_bias=None,
+                        attention_bias=attention_bias,
                         packed_seq_params=packed_seq_params,
                         input_ids=input_ids,
                         **kwargs
@@ -360,7 +361,7 @@ def transformer_block_forward(
                         context=context,
                         context_mask=context_mask,
                         rotary_pos_emb=rotary_pos_emb,
-                        attention_bias=None,
+                        attention_bias=attention_bias,
                         packed_seq_params=packed_seq_params,
                         **kwargs
                     )  
@@ -410,6 +411,7 @@ def transformer_block_forward(
                                 context=context,
                                 context_mask=context_mask,
                                 rotary_pos_emb=rotary_pos_emb,
+                                attention_bias=attention_bias,
                                 inference_context=inference_context,
                                 packed_seq_params=packed_seq_params,
                                 input_ids=input_ids,
@@ -421,6 +423,7 @@ def transformer_block_forward(
                                 context=context,
                                 context_mask=context_mask,
                                 rotary_pos_emb=rotary_pos_emb,
+                                attention_bias=attention_bias,
                                 inference_context=inference_context,
                                 packed_seq_params=packed_seq_params,
                             )
